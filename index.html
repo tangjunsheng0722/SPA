@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        var states ;
+        var currentState;
+        $(document).ready(function() {
+            states = registState();
+            currentState = init();
+            //监听hash路由变化
+            window.addEventListener("hashchange", function() {
+                var nextState;
+                console.log(window.location.hash);
+                //判断地址是否为空，若为空，则默认到main-view页面
+                if (window.location.hash == "") {
+                    nextState = "main-view";
+                }
+                else {
+                    //若不为空，则获取hash路由信息，得到下一个状态
+                    nextState = window.location.hash.substring(1);
+                }
+                //判断当前状态是否注册过(是有存在这个状态)0g
+                var validState = checkState(states, nextState);
+                //若不存在，则返回当前状态
+                if (!validState) {
+                    console.log("you enter the false validState");
+                    window.location.hash = "#" + currentState;
+                    return;
+                }
+                $('#'+ currentState).css("display", "none");
+                $('#'+ nextState).css("display", "block");
+                currentState = nextState;
+            })
+
+        })
+        //状态注册
+        function registState() {
+            var states = [];
+            //状态注册
+            $(".pageview").map(function() {
+                return states.push($(this)[0].id);
+            })
+            return states;
+        }
+        //初始化，对用户一开始输入的url进行处理
+        function init() {
+            var currentState = window.location.hash.substring(1);
+            if (currentState == "") {
+                currentState = "main-view";
+            }
+            if (currentState != "main-view") {
+                $('#main-view').css("display", "none");
+                $('#'+ currentState).css("display", "block");
+            }
+            return currentState;
+        }
+        //判断状态是否存在
+        function checkState(states, nextState) {
+            var tof = false;
+            states.forEach(function(element) {
+                if (element == nextState) {
+                    tof = true;
+                }
+            })
+            return tof;
+        }
+    </script>
+</head>
+<body>
+<a href="#main-view"></a>
+<a href="#list-view"></a>
+<a href="#detail-view"></a>
+<div class="pageview" style="background: #3b76c0" id="main-view">
+    <h3>首页</h3>
+    <div title="-list-view" class="right-arrow"></div>
+</div>
+<div class="pageview" style="background: #58c03b;display: none" id="list-view">
+    <h3>列表页面</h3>
+    <div class="left-arrow"></div>
+    <div title="-detail-view" class="right-arrow"></div>
+</div>
+<div class="pageview" style="background: #c03b25;display: none" id="detail-view">
+    <h3>列表详情页面</h3>
+    <div class="left-arrow"></div>
+</div>
+</body>
+</html>
